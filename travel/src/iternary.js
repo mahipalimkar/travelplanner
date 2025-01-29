@@ -1,32 +1,42 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import backimg from "./assets/travel_login.jpg";
 import { Link } from "react-router-dom";
 import hotelData from "./hotel_data.json"; // Import the hotel data
 import restaurantData from "./restaurant_data.json"; // Import the restaurant data
-
+// 
 const Iternary = () => {
   // State for flight search
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [tripType, setTripType] = useState("roundtrip");
+  const [tripClass, setTripClass] = useState("economy");
   const [departDate, setDepartDate] = useState("");
   const [returnDate, setReturnDate] = useState("");
 
-  const handleSearchFlights = (e) => {
-    e.preventDefault();
-    console.log(
-      "Searching flights from:",
-      from,
-      "to:",
-      to,
-      "Trip type:",
-      tripType,
-      "Depart:",
-      departDate,
-      "Return:",
-      returnDate
+  // States for hotel and restaurant data from localStorage or default data
+  const [hotels, setHotels] = useState([]);
+  const [restaurants, setRestaurants] = useState([]);
+
+  // Effect to retrieve top5 hotels and restaurants from localStorage on mount
+  useEffect(() => {
+    const savedHotels = JSON.parse(localStorage.getItem("top5Hotels"));
+    const savedRestaurants = JSON.parse(
+      localStorage.getItem("top5Restaurants")
     );
-  };
+    console.log(savedRestaurants)
+console.log(savedHotels);
+    if (savedHotels && savedHotels.length > 0) {
+      setHotels(savedHotels);
+    } else {
+      setHotels(hotelData.slice(0, 5)); // Default to top 5 from hotelData
+    }
+
+    if (savedRestaurants && savedRestaurants.length > 0) {
+      setRestaurants(savedRestaurants);
+    } else {
+      setRestaurants(restaurantData.slice(0, 5)); // Default to top 5 from restaurantData
+    }
+  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100">
@@ -50,69 +60,13 @@ const Iternary = () => {
 
         {/* Flight Search Box */}
         <div className="bg-gray-50 p-6 rounded-lg shadow-md mb-6">
-          <h1 className="text-3xl font-bold mb-4">Find Flights</h1>
-          <form onSubmit={handleSearchFlights}>
-            <div className="flex flex-col gap-4">
-              <input
-                type="text"
-                value={from}
-                onChange={(e) => setFrom(e.target.value)}
-                placeholder="From"
-                className="border border-gray-300 rounded p-2"
-                required
-              />
-              <input
-                type="text"
-                value={to}
-                onChange={(e) => setTo(e.target.value)}
-                placeholder="To"
-                className="border border-gray-300 rounded p-2"
-                required
-              />
-              <div className="flex items-center">
-                <label className="mr-4">
-                  <input
-                    type="radio"
-                    value="roundtrip"
-                    checked={tripType === "roundtrip"}
-                    onChange={() => setTripType("roundtrip")}
-                  />
-                  Roundtrip
-                </label>
-                <label>
-                  <input
-                    type="radio"
-                    value="one-way"
-                    checked={tripType === "one-way"}
-                    onChange={() => setTripType("one-way")}
-                  />
-                  One-way
-                </label>
-              </div>
-              <input
-                type="date"
-                value={departDate}
-                onChange={(e) => setDepartDate(e.target.value)}
-                className="border border-gray-300 rounded p-2"
-                required
-              />
-              {tripType === "roundtrip" && (
-                <input
-                  type="date"
-                  value={returnDate}
-                  onChange={(e) => setReturnDate(e.target.value)}
-                  className="border border-gray-300 rounded p-2"
-                  placeholder="Return Date"
-                />
-              )}
-              <button
-                type="submit"
-                className="bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700"
-              >
-                Search Flights ✈️
-              </button>
-            </div>
-          </form>
+          <h1 className="text-3xl font-bold mb-4">Book Flights now !</h1>
+          <button
+            onClick={() => window.open("https://www.booking.com", "_blank")}
+            className="bg-blue-500 text-white text-xl px-6 py-3 rounded hover:bg-blue-600"
+          >
+            Book Flights
+          </button>
         </div>
 
         {/* Hotel Accommodation Heading */}
@@ -120,8 +74,8 @@ const Iternary = () => {
 
         {/* Horizontal Flex Section for Hotel Cards */}
         <div className="flex flex-row gap-4 mb-6">
-          {/* Loop through hotelData and generate the cards */}
-          {hotelData.map((hotel, index) => (
+          {/* Loop through hotel data and generate the cards */}
+          {hotels.map((hotel, index) => (
             <div
               key={index}
               className="w-1/5 rounded overflow-hidden shadow-lg bg-gray-50"
@@ -146,11 +100,12 @@ const Iternary = () => {
             </div>
           ))}
         </div>
+
         {/* Restaurant Section */}
         <h1 className="text-3xl font-bold mb-4">Restaurant</h1>
         <div className="flex flex-row gap-4 mb-6">
-          {/* Loop through restaurantData and generate the restaurant cards */}
-          {restaurantData.map((restaurant, index) => (
+          {/* Loop through restaurant data and generate the restaurant cards */}
+          {restaurants.map((restaurant, index) => (
             <div
               key={index}
               className="w-1/5 rounded overflow-hidden shadow-lg bg-gray-50"
