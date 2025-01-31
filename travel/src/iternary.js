@@ -21,6 +21,7 @@ const Iternary = () => {
   // States for hotel and restaurant data from localStorage or default data
   const [hotels, setHotels] = useState([]);
   const [restaurants, setRestaurants] = useState([]);
+  const [itinerary, setItinerary] = useState(null);
 
   // Effect to retrieve top5 hotels and restaurants from localStorage on mount
   useEffect(() => {
@@ -28,8 +29,11 @@ const Iternary = () => {
     const savedRestaurants = JSON.parse(
       localStorage.getItem("top5Restaurants")
     );
+    const savedItinerary = JSON.parse(localStorage.getItem("travelData"));
     console.log(savedRestaurants);
     console.log(savedHotels);
+    console.log(savedItinerary);
+
     if (savedHotels && savedHotels.length > 0) {
       setHotels(savedHotels);
     } else {
@@ -40,6 +44,9 @@ const Iternary = () => {
       setRestaurants(savedRestaurants);
     } else {
       setRestaurants(restaurantData.slice(0, 5)); // Default to top 5 from restaurantData
+    }
+    if (savedItinerary) {
+      setItinerary(savedItinerary.itinerary);
     }
   }, []);
 
@@ -78,7 +85,7 @@ const Iternary = () => {
             className="rounded-lg shadow-md mb-4 h-80 w-full object-cover"
           />
           <div className="flex items-center justify-between mt-4">
-            <p className="text-3xl font-bold">New York</p>
+            <p className="text-3xl font-bold">{to}</p>
             <Link to="/carbonfp">
               <button className="bg-green-500 text-white text-xl px-6 py-3 rounded hover:bg-green-600">
                 Calculate Carbon Footprint
@@ -86,7 +93,15 @@ const Iternary = () => {
             </Link>
           </div>
         </div>
-
+        {/* Display Itinerary */}
+        {itinerary && (
+          <div className="bg-gray-50 p-6 rounded-lg shadow-md mb-6">
+            <h1 className="text-3xl font-bold mb-4">Your Itinerary</h1>
+            <p className="text-gray-700 text-base whitespace-pre-line">
+              {itinerary}
+            </p>
+          </div>
+        )}
         {/* Flight Search Box */}
         <div className="bg-gray-50 p-6 rounded-lg shadow-md mb-6">
           <h1 className="text-3xl font-bold mb-4">Find Flights</h1>
