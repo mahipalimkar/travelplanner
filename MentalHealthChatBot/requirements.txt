@@ -1,0 +1,12 @@
+Flask
+langchain
+python-dotenv
+requests
+spacy
+geopy
+geonamescache
+pycountry
+langchain-community
+huggingface_hub
+# after this run 
+# python -m spacy download en_core_web_sm
