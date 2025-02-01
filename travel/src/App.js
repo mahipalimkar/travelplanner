@@ -7,12 +7,11 @@ import About from "./about";
 import Contact from "./contact";
 import Iternary from "./iternary";
 import Input from "./input";
-//import Itineraries from "./itineraries";
+import Itineraries from "./itineraries";
 import Carbonfp from "./carbonfp";
 import PlannedItineraries from "./itineraries";
-import ItineraryDetail from "./assets/itinerarydetails";
 //import TravelForm from "./travelform";
-
+import ItineraryDetail from "./itineraryDetail";
 var ReactDOM = require("react-dom");
 //import ReactDOM from "react-dom";
 const App = () => {
@@ -28,7 +27,7 @@ const App = () => {
         <Route path="/itineraries" element={<Itineraries />} />
         <Route path="/carbonfp" element={<Carbonfp />} />
         <Route path="/planneditinerary" element={<Itineraries />} />
-        <Route path="/itinerarydetails" element={<ItineraryDetail />} />
+        <Route path="/itinerary/:id" element={<ItineraryDetail />} />
         {/*<Route path="/travelform" element={<TravelForm />} />*/}
       </Routes>
     </Router>

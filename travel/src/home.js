@@ -41,7 +41,7 @@ const Home = () => {
     <div className="flex flex-col min-h-screen bg-cover bg-fixed">
       {/* Background image */}
       <div
-        className="h-screen flex flex-col items-center justify-center bg-cover bg-center"
+        className="h-[90vh] flex flex-col items-center justify-center bg-cover bg-center"
         style={{
           backgroundImage: `url(${backimg})`, // Background image
         }}
@@ -49,10 +49,16 @@ const Home = () => {
         {/* Navbar */}
         <nav className="absolute top-0 right-0 bg-transparent flex justify-end p-4 w-full">
           <div className="space-x-4">
-            <Link to="/about" className="text-white hover:underline">
+            <Link
+              to="/about"
+              className="bg-gray-800 text-white py-1 px-4 rounded hover:bg-gray-700"
+            >
               About Us
             </Link>
-            <Link to="/contact" className="text-white hover:underline">
+            <Link
+              to="/contact"
+              className="bg-gray-800 text-white py-1 px-4 rounded hover:bg-gray-700"
+            >
               Contact Us
             </Link>
             <Link to="/login?mode=login" state={{ mode: "login" }}>
@@ -81,7 +87,7 @@ const Home = () => {
               See Planned Itineraries
             </button>
           </Link>
-          <Link to="/input">
+          <Link to="/login">
             <button className="bg-white bg-opacity-30 border-2 border-white text-white py-3 px-8 rounded hover:bg-opacity-50 transition">
               Start Planning Your Trip
             </button>

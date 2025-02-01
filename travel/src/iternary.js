@@ -85,7 +85,7 @@ const Iternary = () => {
             className="rounded-lg shadow-md mb-4 h-80 w-full object-cover"
           />
           <div className="flex items-center justify-between mt-4">
-            <p className="text-3xl font-bold">{to}</p>
+            <p className="text-3xl font-bold">{to || "No Destination"}</p>
             <Link to="/carbonfp">
               <button className="bg-green-500 text-white text-xl px-6 py-3 rounded hover:bg-green-600">
                 Calculate Carbon Footprint
@@ -97,8 +97,26 @@ const Iternary = () => {
         {itinerary && (
           <div className="bg-gray-50 p-6 rounded-lg shadow-md mb-6">
             <h1 className="text-3xl font-bold mb-4">Your Itinerary</h1>
-            <p className="text-gray-700 text-base whitespace-pre-line">
-              {itinerary}
+            <p className="text-gray-700 text-lg whitespace-pre-line">
+              {itinerary.split("\n\n").map((day, index) => (
+                <div
+                  key={index}
+                  className="border-2 p-4 mb-4 bg-gray-50 rounded-lg shadow-lg shadow-blue-300 transform hover:scale-105 transition-all duration-300 ease-in-out"
+                >
+                  {day.split("\n").map((line, idx) => (
+                    <p
+                      key={idx}
+                      className={
+                        line.match(/Day \d+/)
+                          ? "font-bold text-xl text-black-800"
+                          : "text-xl"
+                      }
+                    >
+                      {line}
+                    </p>
+                  ))}
+                </div>
+              ))}
             </p>
           </div>
         )}
@@ -219,6 +237,7 @@ const Iternary = () => {
                 }
                 alt={`Restaurant ${index + 1}`}
               />
+
               <div className="px-6 py-4">
                 <div className="font-bold text-xl mb-2">{restaurant.name}</div>
                 <p className="text-gray-700 text-base">
@@ -253,4 +272,4 @@ const Iternary = () => {
   );
 };
 
-export default Iternary;
+export default Iternary;

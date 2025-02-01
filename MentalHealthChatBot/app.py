@@ -1,20 +1,22 @@
-from flask import Flask, render_template, request
+from flask import Flask, request, jsonify
 from langchain.llms import HuggingFaceHub
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 from dotenv import load_dotenv
 import os
-import requests
 import json
+import requests
 from datetime import datetime
 import spacy
 from geopy.geocoders import Nominatim
 from geonamescache import GeonamesCache
+from flask_cors import CORS  # To enable CORS for your React app
 
 # Load environment variables
 load_dotenv()
 HUGGINGFACEHUB_API_TOKEN = os.getenv("HUGGINGFACEHUB_API_TOKEN")
-VISUAL_CROSSING_API_KEY = os.getenv("VISUAL_CROSSING_API_KEY")  # Update to use Visual Crossing API key
+VISUAL_CROSSING_API_KEY = os.getenv("VISUAL_CROSSING_API_KEY")
+
 
 # Initialize the Hugging Face model
 llm = HuggingFaceHub(
@@ -41,8 +43,9 @@ prompt = PromptTemplate(
     ),
 )
 
-# Initialize the Flask app
+# Initialize the Flask app and enable CORS for React app
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})  # Allow requests from React's port
 
 # Function to validate if a GPE entity is a city using Geonames
 def is_city(name):
@@ -93,21 +96,23 @@ def fetch_weather_data(city_names, start_date):
                     "low_temp": f"{round(low_temp_c, 1)}°C",   # Round to 1 decimal place
                 })
             else:
-                print(f"Failed to fetch weather data for {city}: {response.status_code} - {response.text}")  # Log error
+                print(f"Failed to fetch weather data for {city}: {response.status_code} - {response.text}")
         except Exception as e:
-            print(f"Error fetching weather data for {city}: {e}")  # Log exception
+            print(f"Error fetching weather data for {city}: {e}")
     return weather_data
 
 @app.route("/generate", methods=["POST"])
 def generate_itinerary():
-    destination = request.form.get("destination")
-    days = request.form.get("days")
-    preferences = request.form.get("preferences")
-    start_date = request.form.get("start_date")
-    end_date = request.form.get("end_date")
-    num_people = request.form.get("num_people")
-    budget = request.form.get("budget")
-    travel_mode = request.form.get("travel_mode")
+    data = request.json  # Receive data as JSON
+    
+    destination = data.get("destination")
+    days = data.get("days")
+    preferences = data.get("preferences")
+    start_date = data.get("start_date")
+    end_date = data.get("end_date")
+    num_people = data.get("num_people")
+    budget = data.get("budget")
+    travel_mode = data.get("travel_mode")
 
     # Generate itinerary text
     chain = LLMChain(llm=llm, prompt=prompt)
@@ -121,7 +126,12 @@ def generate_itinerary():
         "budget": budget,
         "travel_mode": travel_mode
     })
-
+    
+    # Split the text at empty lines and take everything after the first empty line
+    itinerary_parts = itinerary.strip().split("\n\n", 1)  # Splits into two parts at the first empty line
+    itinerary = itinerary_parts[1]  # Take second part if exists
+  # Removes any repeated prompt
+    itinerary = itinerary.replace("#", "").replace("*", "").replace("_", "").replace("`", "")
     # Extract city names
     city_names = extract_city_names(itinerary)
 
@@ -130,12 +140,13 @@ def generate_itinerary():
 
     # Save city names to JSON
     save_cities_to_json(city_names)
-
-    return render_template("index.html", itinerary=itinerary, weather=weather, cities_visited=city_names)
+    print(city_names)
+    print(start_date)
+    return jsonify({"itinerary": itinerary, "weather": weather, "cities_visited": city_names})
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+    return "Server is running"
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True,port=5000)

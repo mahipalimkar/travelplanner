@@ -154,3 +154,5 @@ const itineraryDetails = {
     ],
   },
 };
+
+export default itineraryDetails;
